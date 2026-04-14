@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+*{
+  margin: none;
+  padding: none;
+}
+
+@theme{
+  --color-cream: #b175e6;
+  --color-ink: #16151B;
+}
