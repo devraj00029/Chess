@@ -1,5 +1,3 @@
-
-
 const board = () =>{
 
     const chessBoard = [
