@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import createInitialBoard from "./board.js";
-
+import pieces from "./pieces.js";
 
 const App = () =>{
   let Board = []
@@ -34,15 +34,15 @@ const App = () =>{
 
       if((i+j)%2===0){
         Board.push(
-          <div key={square} onClick={()=>handleClick(i,j)} className={`${(selectedSqr[0]===i && selectedSqr[1]===j) ? "bg-white" : "bg-ink"} h-full w-full text-cream`}>
-            {board[i][j]}
+          <div key={square} onClick={()=>handleClick(i,j)} className={`${(selectedSqr[0]===i && selectedSqr[1]===j) ? "bg-white" : "bg-ink"} h-full w-full text-cream flex justify-center items-center` }>
+            {board[i][j] && <img src={pieces[board[i][j][1]][board[i][j][0]]} ></img>}
           </div>
         )
       }
       else{
         Board.push(
           <div key={square} onClick={()=>handleClick(i,j)} className={`${(selectedSqr[0]===i && selectedSqr[1]===j)? "bg-white" : "bg-cream"} h-full w-full text-ink`}>
-            {board[i][j]}
+            {board[i][j] && <img src={pieces[board[i][j][1]][board[i][j][0]]}></img>}
           </div>
         )
       }
