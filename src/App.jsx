@@ -8,10 +8,15 @@ const App = () =>{
   const [board,setBoard] = useState(createInitialBoard());
   const [selectedSqr,setSelectedSqr] = useState([]);
   const [validSqr,setValidSqr] = useState([]);
+  const [isWhite,setIsWhite] = useState(true);
 
   function handleClick(i,j){
 
+
     if(selectedSqr.length === 0){
+      if(!board[i][j]){ return;}
+      if(board[i][j][1]!=='w' && isWhite) return
+      if(board[i][j][1]!=='b' && !isWhite) return 
       setSelectedSqr([i,j])
       setValidSqr(getLegalMove(board,i,j))
       console.log(getLegalMove(board,i,j))
@@ -26,11 +31,17 @@ const App = () =>{
       newBoard[selectedSqr[0]][selectedSqr[1]] = null
       setBoard(newBoard)
       setSelectedSqr([])
+      setValidSqr([])
+      setIsWhite(!isWhite)
     }
     else{
       setSelectedSqr([i,j])
     }
+    
   }
+
+
+
 
   for(let i=0;i<8;i++){
     for(let j=0;j<8;j++){
