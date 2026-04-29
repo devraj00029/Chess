@@ -1,9 +1,45 @@
-function getPawnMove(color,board, row, col) {
-    const Boffset = [0,1]
-    const Woffset = [0,-1]
+function getPawnMove(board, row, col) {
+    const Boffset = [1,0]
+    const Woffset = [-1,0]
+    let legalSquare = []
     if(board[row][col][1]==='w'){
-        
+        if(row == 6){
+            let step = 1;
+            for(let i=0;i<2;i++){
+                let validSquare = [(Woffset[0]*step)+row,(Woffset[1]*step)+col]
+                console.log(board[validSquare[0]][validSquare[1]]) 
+                if(validSquare[0]<8&&validSquare[1]<8){
+                    legalSquare.push(validSquare)
+                }
+                step++;
+            }
+        }
+        else{
+            let validSquare = [Woffset[0]+row,Woffset[1]+col]
+            if(validSquare[0]<8 && validSquare[1]<8 && validSquare[0]>=0 && validSquare[1]>=0){
+                legalSquare.push(validSquare)
+            }
+        }
     }
+    if(board[row][col][1]==='b'){
+        if(row == 1){
+            let step = 1;
+            for(let i=0;i<2;i++){
+                let validSquare = [(Boffset[0]*step)+row,(Boffset[1]*step)+col]
+                if(validSquare[0]<8&&validSquare[1]<8){
+                    legalSquare.push(validSquare)
+                }
+                step++;
+            }
+        }
+        else{
+            let validSquare = [Boffset[0]+row,Boffset[1]+col]
+            if(validSquare[0]<8 && validSquare[1]<8 && validSquare[0]>=0 && validSquare[1]>=0){
+                legalSquare.push(validSquare)
+            }
+        }
+    }
+    return legalSquare
 }
 
 function getKnightMove(board, row, col) {
@@ -30,9 +66,20 @@ function getBishopMove(board, row, col) {
         let step = 1;
         while(true){
             let validSquare = [(offset[i][0]*step)+row,(offset[i][1]*step)+col]
-            if(validSquare[0]<8 && validSquare[1]<8 && validSquare[0]>=0 && validSquare[1]>=0){
-                legalMoves.push(validSquare);
-                step++;
+            
+            if(validSquare[0]<8 && validSquare[1]<8 && validSquare[0]>=0 && validSquare[1]>=0 ){
+                if(!board[validSquare[0]][validSquare[1]]){
+                    legalMoves.push(validSquare);
+                    step++;
+                }
+                else if(board[validSquare[0]][validSquare[1]][1] != board[row][col][1]){
+                    legalMoves.push(validSquare);
+                    step++;
+                    break;
+                }
+                else{
+                    break;
+                }
             }
             else break;
         }
@@ -51,8 +98,20 @@ function getRookMove(board, row, col) {
         while(true){
             let validSquare = [(offset[i][0]*step)+row,(offset[i][1]*step)+col]
             if(validSquare[0]<8 && validSquare[1]<8 && validSquare[0]>=0 && validSquare[1]>=0){
-                legalMoves.push(validSquare);
-                step++;
+                if(validSquare[0]<8 && validSquare[1]<8 && validSquare[0]>=0 && validSquare[1]>=0 ){
+                if(!board[validSquare[0]][validSquare[1]]){
+                    legalMoves.push(validSquare);
+                    step++;
+                }
+                else if(board[validSquare[0]][validSquare[1]][1] != board[row][col][1]){
+                    legalMoves.push(validSquare);
+                    step++;
+                    break;
+                }
+                else{
+                    break;
+                }
+            }
             }
             else break;
         }
@@ -71,8 +130,20 @@ function getQueenMove(board, row, col) {
         while(true){
             let validSquare = [(offset[i][0]*step)+row,(offset[i][1]*step)+col]
             if(validSquare[0]<8 && validSquare[1]<8 && validSquare[0]>=0 && validSquare[1]>=0){
-                legalMoves.push(validSquare);
-                step++;
+                if(validSquare[0]<8 && validSquare[1]<8 && validSquare[0]>=0 && validSquare[1]>=0 ){
+                if(!board[validSquare[0]][validSquare[1]]){
+                    legalMoves.push(validSquare);
+                    step++;
+                }
+                else if(board[validSquare[0]][validSquare[1]][1] != board[row][col][1]){
+                    legalMoves.push(validSquare);
+                    step++;
+                    break;
+                }
+                else{
+                    break;
+                }
+            }
             }
             else break;
         }
@@ -92,8 +163,10 @@ function getKingMove(board, row, col) {
     return legalMoves
 }
 
+
 function getLegalMove(board, row, col){
     const type = board[row][col];
+
     if(!type) return [];
     else if(type[0] === 'n') return getKnightMove(board,row,col)
     else if(type[0]==='b') return getBishopMove(board,row,col)
@@ -102,5 +175,6 @@ function getLegalMove(board, row, col){
     else if(type[0]==='k') return getKingMove(board,row,col)
     else if(type[0]==='p') return getPawnMove(board,row,col)
 }
+
 
 export default getLegalMove
