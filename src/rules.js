@@ -1,15 +1,14 @@
 function getPawnMove(board, row, col) {
     const Boffset = [1,0]
     const Woffset = [-1,0]
-    let legalSquare = []
+    let legalMoves = []
     if(board[row][col][1]==='w'){
         if(row == 6){
             let step = 1;
             for(let i=0;i<2;i++){
                 let validSquare = [(Woffset[0]*step)+row,(Woffset[1]*step)+col]
-                console.log(board[validSquare[0]][validSquare[1]]) 
                 if(validSquare[0]<8&&validSquare[1]<8){
-                    legalSquare.push(validSquare)
+                    legalMoves.push(validSquare)
                 }
                 step++;
             }
@@ -17,7 +16,17 @@ function getPawnMove(board, row, col) {
         else{
             let validSquare = [Woffset[0]+row,Woffset[1]+col]
             if(validSquare[0]<8 && validSquare[1]<8 && validSquare[0]>=0 && validSquare[1]>=0){
-                legalSquare.push(validSquare)
+                legalMoves.push(validSquare)
+                // console.log(legalMoves)
+                // if(board[validSquare[0]][validSquare[1]+1] && board[validSquare[0]][validSquare[1]+1][1] =='b'){
+                //     validSquare[1] ++
+                //     legalMoves.push(validSquare)
+                // }
+                // else if(board[validSquare[0]][validSquare[1]-1] && board[validSquare[0]][validSquare[1]-1][1] =='b'){
+                //     validSquare[1] ++
+                //     legalMoves.push(validSquare)
+                // }
+                console.log(legalMoves)
             }
         }
     }
@@ -27,7 +36,7 @@ function getPawnMove(board, row, col) {
             for(let i=0;i<2;i++){
                 let validSquare = [(Boffset[0]*step)+row,(Boffset[1]*step)+col]
                 if(validSquare[0]<8&&validSquare[1]<8){
-                    legalSquare.push(validSquare)
+                    legalMoves.push(validSquare)
                 }
                 step++;
             }
@@ -35,11 +44,11 @@ function getPawnMove(board, row, col) {
         else{
             let validSquare = [Boffset[0]+row,Boffset[1]+col]
             if(validSquare[0]<8 && validSquare[1]<8 && validSquare[0]>=0 && validSquare[1]>=0){
-                legalSquare.push(validSquare)
+                legalMoves.push(validSquare)
             }
         }
     }
-    return legalSquare
+    return legalMoves
 }
 
 function getKnightMove(board, row, col) {
@@ -50,7 +59,10 @@ function getKnightMove(board, row, col) {
     for(let i=0;i<8;i++){
         let validSquare = [offset[i][0]+row,offset[i][1]+col];
         if(validSquare[0]<8 && validSquare[1]<8 && validSquare[0]>=0 && validSquare[1]>=0){
-            legalMoves.push(validSquare)
+            if(board[validSquare[0]][validSquare[1]] && board[validSquare[0]][validSquare[1]][1] === board[row][col][1]){
+                break
+            }
+            legalMoves.push(validSquare)  
         }
     }
 
@@ -157,7 +169,18 @@ function getKingMove(board, row, col) {
     for(let i=0;i<8;i++){
         let validSquare = [offset[i][0]+row,offset[i][1]+col]
         if(validSquare[0]<8 && validSquare[1]<8 && validSquare[0]>=0 && validSquare[1]>=0){
-            legalMoves.push(validSquare);
+            if(!board[validSquare[0]][validSquare[1]]){
+                legalMoves.push(validSquare);
+                step++;
+            }
+            else if(board[validSquare[0]][validSquare[1]][1] != board[row][col][1]){
+                legalMoves.push(validSquare);
+                step++;
+                break;
+            }
+            else{
+                break;
+            }
         }
     }
     return legalMoves
