@@ -27,8 +27,6 @@ const App = () =>{
     }
     // moving a piece
     else if(board[selectedSqr[0]][selectedSqr[1]]!=null && validSqrs.some(validSqr => validSqr[0]==i && validSqr[1]==j)){
-      console.log(validSqrs)
-      console.log([i,j])
       const newBoard = board.map(i => [...i])
       newBoard[i][j] = newBoard[selectedSqr[0]][selectedSqr[1]]
       newBoard[selectedSqr[0]][selectedSqr[1]] = null
