@@ -9,6 +9,7 @@ const App = () =>{
   const [selectedSqr,setSelectedSqr] = useState([]);
   const [validSqrs,setvalidSqrs] = useState([]);
   const [isWhite,setIsWhite] = useState(true);
+  const [prevMove,setPrevMove] = useState(null);
 
   function handleClick(i,j){
 
@@ -18,7 +19,7 @@ const App = () =>{
       if(board[i][j][1]!=='w' && isWhite) return
       if(board[i][j][1]!=='b' && !isWhite) return 
       setSelectedSqr([i,j])
-      setvalidSqrs(getLegalMove(board,i,j))
+      setvalidSqrs(getLegalMove(board,i,j,prevMove))
     }
     // clicking same square
     else if(selectedSqr[0]==i && selectedSqr[1]==j){
@@ -31,6 +32,7 @@ const App = () =>{
       newBoard[i][j] = newBoard[selectedSqr[0]][selectedSqr[1]]
       newBoard[selectedSqr[0]][selectedSqr[1]] = null
       setBoard(newBoard)
+      setPrevMove({piece:board[selectedSqr[0]][selectedSqr[1]] ,from:[selectedSqr[0],selectedSqr[1]], to:[i,j]})
       setSelectedSqr([])
       setvalidSqrs([])
       setIsWhite(!isWhite)
@@ -40,7 +42,7 @@ const App = () =>{
       if(board[i][j][1]!=='w' && isWhite) return
       if(board[i][j][1]!=='b' && !isWhite) return 
       setSelectedSqr([i,j])
-      setvalidSqrs(getLegalMove(board,i,j))
+      setvalidSqrs(getLegalMove(board,i,j,prevMove))
     }
   }
 
@@ -55,14 +57,16 @@ const App = () =>{
 
       if((i+j)%2===0){
         Board.push(
-          <div key={square} onClick={()=>handleClick(i,j)} className={`${((selectedSqr[0]===i && selectedSqr[1]===j) || validSqrs.some(sqr=>sqr[0]===i && sqr[1]===j)) ? "bg-white" : "bg-ink"} h-full w-full text-cream flex justify-center items-center` }>
+          <div key={square} onClick={()=>handleClick(i,j)} 
+          className={`${((selectedSqr[0]===i && selectedSqr[1]===j) || validSqrs.some(sqr=>sqr[0]===i && sqr[1]===j)) ? "bg-white" : "bg-ink"} h-full w-full text-cream flex justify-center items-center` }>
             {board[i][j] && <img src={pieces[board[i][j][1]][board[i][j][0]]} className="h-9/10 pt-1"></img>}
           </div>
         )
       }
       else{
         Board.push(
-          <div key={square} onClick={()=>handleClick(i,j)} className={`${((selectedSqr[0]===i && selectedSqr[1]===j) || validSqrs.some(sqr=>sqr[0]===i && sqr[1]===j))? "bg-white" : "bg-cream"} h-full w-full text-ink flex justify-center items-center`}>
+          <div key={square} onClick={()=>handleClick(i,j)} 
+          className={`${((selectedSqr[0]===i && selectedSqr[1]===j) || validSqrs.some(sqr=>sqr[0]===i && sqr[1]===j))? "bg-white" : "bg-cream"} h-full w-full text-ink flex justify-center items-center`}>
             {board[i][j] && <img src={pieces[board[i][j][1]][board[i][j][0]]} className="h-9/10 pt-1"></img>}
           </div>
         )
