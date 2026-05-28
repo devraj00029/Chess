@@ -12,7 +12,6 @@ const App = () =>{
   const [prevMove,setPrevMove] = useState(null);
 
   function handleClick(i,j){
-
     // first selection
     if(selectedSqr.length === 0){
       if(!board[i][j]) return
@@ -31,12 +30,15 @@ const App = () =>{
       const newBoard = board.map(i => [...i])
       newBoard[i][j] = newBoard[selectedSqr[0]][selectedSqr[1]]
       newBoard[selectedSqr[0]][selectedSqr[1]] = null
+      const isEnPassant =  board[selectedSqr[0]][selectedSqr[1]][0] == 'p' && selectedSqr[1] !=j && !board[i][j]
+      if(isEnPassant) newBoard[prevMove.to[0]][prevMove.to[1]] = null
       setBoard(newBoard)
       setPrevMove({piece:board[selectedSqr[0]][selectedSqr[1]] ,from:[selectedSqr[0],selectedSqr[1]], to:[i,j]})
       setSelectedSqr([])
       setvalidSqrs([])
       setIsWhite(!isWhite)
     }
+    // selecting same colour
     else{
       if(!board[i][j]) return
       if(board[i][j][1]!=='w' && isWhite) return

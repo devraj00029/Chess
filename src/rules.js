@@ -1,12 +1,13 @@
 function getPawnMove(board, row, col, prevMove) {
     const color = board[row][col][1]
-
     const direction = color === 'w'? -1:1
     const startRow = color === 'w'? 6:1
     const enemy = color === 'w'? 'b':'w'
 
     let legalMoves = []
-    
+    console.log('prevMove:', prevMove)
+    console.log('row:', row, 'col:', col)
+    //1st pawn move
     if(row == startRow){
         let step = 1;
         for(let i=0;i<2;i++){
@@ -26,9 +27,17 @@ function getPawnMove(board, row, col, prevMove) {
             step++;
         }
     }
+
+    //pawn move
     else{
         let validSquare = [direction+row,col]
         if((validSquare[0]<8&&validSquare[1]<8) && (validSquare[0]>=0 && validSquare[1]>=0)){
+
+            // en passant
+            if(prevMove && prevMove.piece[0]=='p' && prevMove.piece[1]==enemy && prevMove.to[0] == row && Math.abs(prevMove.from[0] - prevMove.to[0]) == 2 && Math.abs(col-prevMove.to[1])==1)
+            {
+                legalMoves.push([row+direction, prevMove.to[1]])
+            }
             if(!board[validSquare[0]][validSquare[1]]) legalMoves.push(validSquare)
             if(board[row+direction][col+1] && board[row+direction][col+1][1] ==enemy){
                 let attackingSqr1= [validSquare[0],validSquare[1] +1]
@@ -184,7 +193,7 @@ function getKingMove(board, row, col) {
 }
 
 
-function getLegalMove(board, row, col){
+function getLegalMove(board, row, col,prevMove){
     const type = board[row][col];
 
     if(!type) return [];
@@ -193,7 +202,7 @@ function getLegalMove(board, row, col){
     else if(type[0]==='r') return getRookMove(board,row,col)
     else if(type[0]==='q') return getQueenMove(board,row,col)
     else if(type[0]==='k') return getKingMove(board,row,col)
-    else if(type[0]==='p') return getPawnMove(board,row,col)
+    else if(type[0]==='p') return getPawnMove(board,row,col,prevMove)
 }
 
 
