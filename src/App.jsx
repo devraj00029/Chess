@@ -10,15 +10,18 @@ const App = () =>{
   const [validSqrs,setvalidSqrs] = useState([]);
   const [isWhite,setIsWhite] = useState(true);
   const [prevMove,setPrevMove] = useState(null);
+  const [kingMove,setKingMove] = useState({"kw" : false, "kb" : false})
+  const [rookMove,setRookMove] = useState({"rwR" : false, "rwL" : false , "rbR" : false ,"rbL" : false})
 
   function handleClick(i,j){
+    console.log(selectedSqr)
     // first selection
     if(selectedSqr.length === 0){
       if(!board[i][j]) return
       if(board[i][j][1]!=='w' && isWhite) return
       if(board[i][j][1]!=='b' && !isWhite) return 
       setSelectedSqr([i,j])
-      setvalidSqrs(getLegalMove(board,i,j,prevMove))
+      setvalidSqrs(getLegalMove(board,i,j,prevMove,kingMove,rookMove))
     }
     // clicking same square
     else if(selectedSqr[0]==i && selectedSqr[1]==j){
@@ -32,6 +35,14 @@ const App = () =>{
       newBoard[selectedSqr[0]][selectedSqr[1]] = null
       const isEnPassant =  board[selectedSqr[0]][selectedSqr[1]][0] == 'p' && selectedSqr[1] !=j && !board[i][j]
       if(isEnPassant) newBoard[prevMove.to[0]][prevMove.to[1]] = null
+      if(board[selectedSqr[0]][selectedSqr[1]][0] == 'k' ){
+        const kingPiece = `k${board[selectedSqr[0]][selectedSqr[1]][1]}`
+        setKingMove({...kingMove, [kingPiece] : true})
+      }
+      if(board[selectedSqr[0]][selectedSqr[1]][0] == 'r'){
+        const rookPiece = `r${board[selectedSqr[0]][selectedSqr[1]][1]}${selectedSqr[1] === 0 ? 'L' : 'R'}`
+        setRookMove({...rookMove,[rookPiece]:true})
+      }
       setBoard(newBoard)
       setPrevMove({piece:board[selectedSqr[0]][selectedSqr[1]] ,from:[selectedSqr[0],selectedSqr[1]], to:[i,j]})
       setSelectedSqr([])
@@ -44,7 +55,7 @@ const App = () =>{
       if(board[i][j][1]!=='w' && isWhite) return
       if(board[i][j][1]!=='b' && !isWhite) return 
       setSelectedSqr([i,j])
-      setvalidSqrs(getLegalMove(board,i,j,prevMove))
+      setvalidSqrs(getLegalMove(board,i,j,prevMove,kingMove,rookMove))
     }
   }
 
@@ -60,16 +71,22 @@ const App = () =>{
       if((i+j)%2===0){
         Board.push(
           <div key={square} onClick={()=>handleClick(i,j)} 
-          className={`${((selectedSqr[0]===i && selectedSqr[1]===j) || validSqrs.some(sqr=>sqr[0]===i && sqr[1]===j)) ? "bg-white" : "bg-ink"} h-full w-full text-cream flex justify-center items-center` }>
+          className={`bg-ink relative h-full w-full text-cream flex justify-center items-center` }>
             {board[i][j] && <img src={pieces[board[i][j][1]][board[i][j][0]]} className="h-9/10 pt-1"></img>}
+            {validSqrs.some(sqr=>sqr[0]===i && sqr[1]===j)&&
+             <div className="absolute bg-white h-5/12 w-5/12 rounded-full"></div>
+            }
           </div>
         )
       }
       else{
         Board.push(
           <div key={square} onClick={()=>handleClick(i,j)} 
-          className={`${((selectedSqr[0]===i && selectedSqr[1]===j) || validSqrs.some(sqr=>sqr[0]===i && sqr[1]===j))? "bg-white" : "bg-cream"} h-full w-full text-ink flex justify-center items-center`}>
+          className={`bg-violet relative h-full w-full text-ink flex justify-center items-center`}>
             {board[i][j] && <img src={pieces[board[i][j][1]][board[i][j][0]]} className="h-9/10 pt-1"></img>}
+            {validSqrs.some(sqr=>sqr[0]===i && sqr[1]===j)&&
+             <div className="absolute bg-white h-5/12 w-5/12 rounded-full"></div>
+            }
           </div>
         )
       }

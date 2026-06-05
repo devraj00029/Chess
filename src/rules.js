@@ -177,15 +177,9 @@ function getKingMove(board, row, col) {
         if(validSquare[0]<8 && validSquare[1]<8 && validSquare[0]>=0 && validSquare[1]>=0){
             if(!board[validSquare[0]][validSquare[1]]){
                 legalMoves.push(validSquare);
-                step++;
             }
             else if(board[validSquare[0]][validSquare[1]][1] != board[row][col][1]){
                 legalMoves.push(validSquare);
-                step++;
-                break;
-            }
-            else{
-                break;
             }
         }
     }
@@ -193,7 +187,7 @@ function getKingMove(board, row, col) {
 }
 
 
-function getLegalMove(board, row, col,prevMove){
+function getLegalMove(board, row, col,prevMove,kingMove,rookMove){
     const type = board[row][col];
 
     if(!type) return [];
