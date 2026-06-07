@@ -14,7 +14,6 @@ const App = () =>{
   const [rookMove,setRookMove] = useState({"rwR" : false, "rwL" : false , "rbR" : false ,"rbL" : false})
 
   function handleClick(i,j){
-    console.log(selectedSqr)
     // first selection
     if(selectedSqr.length === 0){
       if(!board[i][j]) return
@@ -35,7 +34,17 @@ const App = () =>{
       newBoard[selectedSqr[0]][selectedSqr[1]] = null
       const isEnPassant =  board[selectedSqr[0]][selectedSqr[1]][0] == 'p' && selectedSqr[1] !=j && !board[i][j]
       if(isEnPassant) newBoard[prevMove.to[0]][prevMove.to[1]] = null
-      if(board[selectedSqr[0]][selectedSqr[1]][0] == 'k' ){
+      if(board[selectedSqr[0]][selectedSqr[1]][0] == 'k'){
+        if(Math.abs(selectedSqr[1]-j)==2){
+          if(j==6){
+            newBoard[i][5] = newBoard[i][7]
+            newBoard[i][7] = null
+          }
+          else if(j==2){
+            newBoard[i][3] = newBoard[i][0]
+            newBoard[i][0] = null
+          }
+        }
         const kingPiece = `k${board[selectedSqr[0]][selectedSqr[1]][1]}`
         setKingMove({...kingMove, [kingPiece] : true})
       }
@@ -95,7 +104,7 @@ const App = () =>{
 
   return(
     <div className="flex justify-center items-center h-screen w-screen bg-ink">
-      <div className="grid aspect-square w-[33vw] grid-cols-8 grid-rows-8 border-2 border-cream shadow-[0px_0px_45px_10px_rgba(177,117,230,1)]">
+      <div className="grid aspect-square w-[55vw] grid-cols-8 grid-rows-8 border-2 border-cream shadow-[0px_0px_45px_10px_rgba(177,117,230,1)]">
         {Board}
       </div>
     </div>

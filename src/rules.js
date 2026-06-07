@@ -5,8 +5,7 @@ function getPawnMove(board, row, col, prevMove) {
     const enemy = color === 'w'? 'b':'w'
 
     let legalMoves = []
-    console.log('prevMove:', prevMove)
-    console.log('row:', row, 'col:', col)
+    console.log(color)
     //1st pawn move
     if(row == startRow){
         let step = 1;
@@ -102,7 +101,7 @@ function getBishopMove(board, row, col) {
 
 }
 
-function getRookMove(board, row, col) {
+function getRookMove(board, row, col,kingMove,rookMove) {
     const offset = [[0,-1],[0,1],[-1,0],[1,0]]
 
     let legalMoves = []
@@ -112,11 +111,6 @@ function getRookMove(board, row, col) {
         while(true){
             let validSquare = [(offset[i][0]*step)+row,(offset[i][1]*step)+col]
             if(validSquare[0]<8 && validSquare[1]<8 && validSquare[0]>=0 && validSquare[1]>=0){
-                if(validSquare[0]<8 && validSquare[1]<8 && validSquare[0]>=0 && validSquare[1]>=0 ){
-                if(board[validSquare[0]][validSquare[1]][0] == 'k'){
-                    
-                }
-
                 if(!board[validSquare[0]][validSquare[1]]){
                     legalMoves.push(validSquare);
                     step++;
@@ -129,7 +123,6 @@ function getRookMove(board, row, col) {
                 else{
                     break;
                 }
-            }
             }
             else break;
         }
@@ -169,9 +162,12 @@ function getQueenMove(board, row, col) {
     return legalMoves
 }
 
-function getKingMove(board, row, col) {
+function getKingMove(board, row, col,kingMove,rookMove) {
     const offset = [[0,-1],[0,1],[-1,0],[1,0],[-1,-1],[1,1],[-1,1],[1,-1]]
     let legalMoves = []
+    const color = board[row][col][1]
+    let kingSideClear = true;
+    let queenSideClear = true;
     for(let i=0;i<8;i++){
         let validSquare = [offset[i][0]+row,offset[i][1]+col]
         if(validSquare[0]<8 && validSquare[1]<8 && validSquare[0]>=0 && validSquare[1]>=0){
@@ -183,6 +179,24 @@ function getKingMove(board, row, col) {
             }
         }
     }
+    for(let i = col+1;i<7;i++){
+        if(board[row][i]){
+            kingSideClear = false 
+            break
+        }
+    }
+    for(let i=col-1;i>0;i--){
+        if(board[row][i]){
+            queenSideClear = false
+            break
+        }
+    }
+    if(kingSideClear && !kingMove[`k${color}`] && !rookMove[`r${color}R`]){
+        legalMoves.push([row,col+2])
+    }
+    if(queenSideClear && !kingMove[`k${color}`] && !rookMove[`r${color}L`]){
+        legalMoves.push([row,col-2])
+    }
     return legalMoves
 }
 
@@ -193,9 +207,9 @@ function getLegalMove(board, row, col,prevMove,kingMove,rookMove){
     if(!type) return [];
     else if(type[0] === 'n') return getKnightMove(board,row,col)
     else if(type[0]==='b') return getBishopMove(board,row,col)
-    else if(type[0]==='r') return getRookMove(board,row,col)
+    else if(type[0]==='r') return getRookMove(board,row,col,kingMove,rookMove)
     else if(type[0]==='q') return getQueenMove(board,row,col)
-    else if(type[0]==='k') return getKingMove(board,row,col)
+    else if(type[0]==='k') return getKingMove(board,row,col,kingMove,rookMove)
     else if(type[0]==='p') return getPawnMove(board,row,col,prevMove)
 }
 
