@@ -79,7 +79,6 @@ function getBishopMove(board, row, col) {
         let step = 1;
         while(true){
             let validSquare = [(offset[i][0]*step)+row,(offset[i][1]*step)+col]
-            
             if(validSquare[0]<8 && validSquare[1]<8 && validSquare[0]>=0 && validSquare[1]>=0 ){
                 if(!board[validSquare[0]][validSquare[1]]){
                     legalMoves.push(validSquare);
@@ -87,7 +86,6 @@ function getBishopMove(board, row, col) {
                 }
                 else if(board[validSquare[0]][validSquare[1]][1] != board[row][col][1]){
                     legalMoves.push(validSquare);
-                    step++;
                     break;
                 }
                 else{
@@ -101,7 +99,7 @@ function getBishopMove(board, row, col) {
 
 }
 
-function getRookMove(board, row, col,kingMove,rookMove) {
+function getRookMove(board, row, col) {
     const offset = [[0,-1],[0,1],[-1,0],[1,0]]
 
     let legalMoves = []
@@ -200,18 +198,68 @@ function getKingMove(board, row, col,kingMove,rookMove) {
     return legalMoves
 }
 
-
-function getLegalMove(board, row, col,prevMove,kingMove,rookMove){
-    const type = board[row][col];
-
-    if(!type) return [];
-    else if(type[0] === 'n') return getKnightMove(board,row,col)
-    else if(type[0]==='b') return getBishopMove(board,row,col)
-    else if(type[0]==='r') return getRookMove(board,row,col,kingMove,rookMove)
-    else if(type[0]==='q') return getQueenMove(board,row,col)
-    else if(type[0]==='k') return getKingMove(board,row,col,kingMove,rookMove)
-    else if(type[0]==='p') return getPawnMove(board,row,col,prevMove)
+function getRawMoves(board,i,j){
+    const piece = board[i][j][0]
+    switch(piece){
+        case 'p' : return getPawnMove(board,i,j,null); break
+        case 'r' : return getRookMove(board,i,j);break
+        case 'n' : return getKnightMove(board,i,j);break
+        case 'b' : return getBishopMove(board,i,j);break
+        case 'q' : return getQueenMove(board,i,j); break
+        case 'k' : return getKingMove(board,i,j,{},{}); break
+    }
 }
 
+function isCheck(board,color){
+    let check = false;
+    let kingRow,kingCol
+    for(let i=0;i<8;i++){
+        for(let j=0;j<8;j++){
+            if(board[i][j] == `k${color}`){
+                kingRow = i
+                kingCol = j
+                break;
+            }
+        }
+    }
+    for(let i=0;i<8;i++){
+        for(let j=0;j<8;j++){
+            if(board[i][j] && board[i][j][1]!=color){
+                const moves = getRawMoves(board,i,j)
+                const isAttackingKing = moves.some(move => move[0]==kingRow && move[1]==kingCol);
+                if(isAttackingKing){
+                    return true
+                }
+            }
+        }
+    }
+    return false
+}
 
-export default getLegalMove
+function isCheckMate(board,color){
+
+}
+
+function getLegalMove(board, row, col,prevMove,kingMove,rookMove){
+    const piece = board[row][col];
+    if(!piece) return [];
+
+    let rawMoves = []
+    if (piece[0]==='n') rawMoves = getKnightMove(board,row,col)
+    else if(piece[0]==='b') rawMoves = getBishopMove(board,row,col)
+    else if(piece[0]==='r') rawMoves = getRookMove(board,row,col)
+    else if(piece[0]==='q') rawMoves = getQueenMove(board,row,col)
+    else if(piece[0]==='k') rawMoves = getKingMove(board,row,col,kingMove,rookMove)
+    else if(piece[0]==='p') rawMoves = getPawnMove(board,row,col,prevMove)
+    
+    return rawMoves.filter(([toRow,toCol]) =>{
+        const tempBoard = board.map(r=>[...r])
+        tempBoard[toRow][toCol] = piece;
+        tempBoard[row][col] = null;
+
+        return !isCheck(tempBoard,piece[1])
+    })
+        
+}
+
+export {getLegalMove,isCheck,isCheckMate}

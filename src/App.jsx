@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import createInitialBoard from "./board.js";
 import pieces from "./pieces.js";
-import getLegalMove from "./rules.js";
+import {getLegalMove,isCheck,isCheckMate} from "./rules.js";
 
 const App = () =>{
   let Board = []
@@ -62,6 +62,10 @@ const App = () =>{
       if(isPromotion){
         setPromotion({row:i,col:j,color,from:[selectedSqr[0],selectedSqr[1]]})
         return
+      }
+
+      if(isCheck(color,board)){
+        
       }
 
       setBoard(newBoard)
