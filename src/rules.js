@@ -236,8 +236,35 @@ function isCheck(board,color){
     return false
 }
 
-function isCheckMate(board,color){
+function isCheckMate(board,color,prevMove,kingMove,rookMove){
+    if(!isCheck(board,color)) return false
 
+    for(let i=0;i<8;i++){
+        for(let j=0;j<8;j++){
+            const piece = board[i][j]
+            if(piece && piece[1]==color){
+                const legalMove = getLegalMove(board, i, j,prevMove,kingMove,rookMove)
+                if(legalMove.length>0) return false;
+            }
+        }
+    }
+    return true
+}
+
+function isStaleMate(board,color,prevMove,kingMove,rookMove){
+
+    if(isCheck(board,color)) return false
+
+    for(let i=0;i<8;i++){
+        for(let j=0;j<8;j++){
+            const piece = board[i][j]
+            if(piece && piece[1]==color){
+                const legalMove = getLegalMove(board, i, j,prevMove,kingMove,rookMove)
+                if(legalMove.length>0) return false
+            }
+        }
+    }
+    return true
 }
 
 function getLegalMove(board, row, col,prevMove,kingMove,rookMove){
@@ -262,4 +289,4 @@ function getLegalMove(board, row, col,prevMove,kingMove,rookMove){
         
 }
 
-export {getLegalMove,isCheck,isCheckMate}
+export {getLegalMove,isCheck,isCheckMate,isStaleMate}

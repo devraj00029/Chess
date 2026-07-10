@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import createInitialBoard from "./board.js";
 import pieces from "./pieces.js";
-import {getLegalMove,isCheck,isCheckMate} from "./rules.js";
+import {getLegalMove,isCheck,isCheckMate,isStaleMate} from "./rules.js";
 
 const App = () =>{
   let Board = []
@@ -63,12 +63,11 @@ const App = () =>{
         setPromotion({row:i,col:j,color,from:[selectedSqr[0],selectedSqr[1]]})
         return
       }
-
-      if(isCheck(color,board)){
-        
-      }
-
+      
+      const opponentColor = isWhite ? 'b' : 'w'
       setBoard(newBoard)
+      if(isCheckMate(newBoard,opponentColor,prevMove,kingMove,rookMove)) alert("Game ended by checkmate, now sleep")
+      if(isStaleMate(newBoard,opponentColor,prevMove,kingMove,rookMove)) alert("Game ended by stalemate, now sleep")
       setPrevMove({piece:board[selectedSqr[0]][selectedSqr[1]] ,from:[selectedSqr[0],selectedSqr[1]], to:[i,j]})
       setSelectedSqr([])
       setvalidSqrs([])
