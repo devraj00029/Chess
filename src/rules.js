@@ -1,3 +1,5 @@
+import pieces from "./pieces"
+
 function getPawnMove(board, row, col, prevMove) {
     const color = board[row][col][1]
     const direction = color === 'w'? -1:1
@@ -12,8 +14,6 @@ function getPawnMove(board, row, col, prevMove) {
         for(let i=0;i<2;i++){
             let validSquare = [(direction*step)+row,col]
             if((validSquare[0]<8&&validSquare[1]<8) && (validSquare[0]>=0 && validSquare[1]>=0)){
-                if(!board[validSquare[0]][validSquare[1]]) legalMoves.push(validSquare)
-                else break
                 if(board[row+direction][col+1] && board[row+direction][col+1][1] ==enemy && i==0){
                     let attackingSqr1= [validSquare[0],validSquare[1] +1]
                     legalMoves.push(attackingSqr1)
@@ -22,6 +22,8 @@ function getPawnMove(board, row, col, prevMove) {
                     let attackingSqr2= [validSquare[0],validSquare[1] -1]
                     legalMoves.push(attackingSqr2)
                 }
+                if(!board[validSquare[0]][validSquare[1]]) legalMoves.push(validSquare)
+                else break
             }
             step++;
         }
@@ -49,6 +51,22 @@ function getPawnMove(board, row, col, prevMove) {
         }
     }
 
+    return legalMoves
+}
+
+function getPawnAttackMove(board, row, col){
+    const color = board[row][col][1]
+    const direction = color === 'w'? -1:1
+    let validSquare = [direction+row,col]
+    let legalMoves = []
+    
+    if((validSquare[0]<8&&validSquare[1]<8) && (validSquare[0]>=0 && validSquare[1]>=0)){
+        let attackingSqr1= [validSquare[0],validSquare[1] +1]
+        if(attackingSqr1[1]<8) legalMoves.push(attackingSqr1)
+        let attackingSqr2= [validSquare[0],validSquare[1] -1]
+        if(attackingSqr2[1]>=0 )legalMoves.push(attackingSqr2)
+    }
+        
     return legalMoves
 }
 
@@ -198,15 +216,28 @@ function getKingMove(board, row, col,kingMove,rookMove) {
     return legalMoves
 }
 
-function getRawMoves(board,i,j){
+function getKingAttackMove(board,row,col){
+    const offset = [[0,-1],[0,1],[-1,0],[1,0],[-1,-1],[1,1],[-1,1],[1,-1]]
+    let legalMoves = []
+    const color = board[row][col][1]
+    for(let i=0;i<8;i++){
+        let validSquare = [offset[i][0]+row,offset[i][1]+col]
+        if(validSquare[0]<8 && validSquare[1]<8 && validSquare[0]>=0 && validSquare[1]>=0){
+           legalMoves.push(validSquare);
+        }
+    }
+    return legalMoves
+}
+
+function getAttackedSquare(board,i,j){
     const piece = board[i][j][0]
     switch(piece){
-        case 'p' : return getPawnMove(board,i,j,null); break
+        case 'p' : return getPawnAttackMove(board,i,j); break
         case 'r' : return getRookMove(board,i,j);break
         case 'n' : return getKnightMove(board,i,j);break
         case 'b' : return getBishopMove(board,i,j);break
         case 'q' : return getQueenMove(board,i,j); break
-        case 'k' : return getKingMove(board,i,j,{},{}); break
+        case 'k' : return getKingAttackMove(board,i,j); break
     }
 }
 
@@ -225,7 +256,7 @@ function isCheck(board,color){
     for(let i=0;i<8;i++){
         for(let j=0;j<8;j++){
             if(board[i][j] && board[i][j][1]!=color){
-                const moves = getRawMoves(board,i,j)
+                const moves = getAttackedSquare(board,i,j)
                 const isAttackingKing = moves.some(move => move[0]==kingRow && move[1]==kingCol);
                 if(isAttackingKing){
                     return true
@@ -267,7 +298,38 @@ function isStaleMate(board,color,prevMove,kingMove,rookMove){
     return true
 }
 
-function getLegalMove(board, row, col,prevMove,kingMove,rookMove){
+function insufficientMaterial(board){
+    const pieces = []
+    const bishopColor = []
+    for(let i=0;i<8;i++){
+        for(let j=0;j<8;j++){
+            if(board[i][j]){
+                pieces.push(board[i][j]);
+            }
+            if(board[i][j] && board[i][j][0]=='b'){
+                bishopColor.push((i+j)%2)
+            }
+        }
+    }
+
+    for(let piece of pieces){
+        if(piece[0] == 'q' || piece[0] == 'p' || piece[0] == 'r'){
+            return false
+        }    
+    }
+
+    if(pieces.length === 2) return true;
+    else if(pieces.length === 3) return true;
+    else if(pieces.length === 4){
+        const totalBishop = pieces.filter(p => p[0]==='b').length;
+        if(totalBishop===2 && bishopColor[0]===bishopColor[1]) return true
+    }
+
+    return false
+}
+
+
+function getLegalMove(board, row, col,prevMove,kingMove,rookMove,isWhite){
     const piece = board[row][col];
     if(!piece) return [];
 
@@ -289,4 +351,4 @@ function getLegalMove(board, row, col,prevMove,kingMove,rookMove){
         
 }
 
-export {getLegalMove,isCheck,isCheckMate,isStaleMate}
+export {getLegalMove,isCheck,isCheckMate,isStaleMate,insufficientMaterial}

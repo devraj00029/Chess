@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import createInitialBoard from "./board.js";
 import pieces from "./pieces.js";
-import {getLegalMove,isCheck,isCheckMate,isStaleMate} from "./rules.js";
+import {getLegalMove,isCheck,isCheckMate,isStaleMate,insufficientMaterial} from "./rules.js";
 
 const App = () =>{
   let Board = []
@@ -68,6 +68,7 @@ const App = () =>{
       setBoard(newBoard)
       if(isCheckMate(newBoard,opponentColor,prevMove,kingMove,rookMove)) alert("Game ended by checkmate, now sleep")
       if(isStaleMate(newBoard,opponentColor,prevMove,kingMove,rookMove)) alert("Game ended by stalemate, now sleep")
+      if(insufficientMaterial(newBoard)) alert("Game over insufficient Material, now sleep")
       setPrevMove({piece:board[selectedSqr[0]][selectedSqr[1]] ,from:[selectedSqr[0],selectedSqr[1]], to:[i,j]})
       setSelectedSqr([])
       setvalidSqrs([])
@@ -131,11 +132,18 @@ const App = () =>{
       <div className="grid relative aspect-square h-[35vw] w-[35vw] grid-cols-8 grid-rows-8 border-2 border-cream shadow-[0px_0px_45px_10px_rgba(177,117,230,1)]">
         {Board}
       </div>
-      
-      <div className="flex rounded-xl flex-col h-[35vw] absolute w-[20vw] right-[9vw] bg-ink border-2 border-cream shadow-[0px_0px_45px_10px_rgba(177,117,230,1)]">
-        <div className="flex text-2xl py-6 text-white justify-center items-center">Move</div>
-        <div className="">
-          <div className="text-violet">hello</div>
+      <div className="grid rounded-xl grid-col h-[35vw] absolute w-[20vw] right-[9vw]">
+        <div className="flex rounded-xl flex-col h-[16vw] w-[20vw] mb-10 bg-ink border-2 border-cream shadow-[0px_0px_45px_10px_rgba(177,117,230,1)]">
+          <div className="flex text-2xl py-6 text-white justify-center items-center">Move</div>
+          <div className="">
+            <div className="text-violet">x6q</div>
+          </div>
+        </div>
+        <div className="flex rounded-xl flex-col h-[16vw] w-[20vw] bg-ink border-2 border-cream shadow-[0px_0px_45px_10px_rgba(177,117,230,1)]">
+          <div className="flex text-2xl py-6 text-white justify-center items-center">Menu</div>
+          <div className="">
+            <button onClick={()=>alert("draw")} className="border-2 text-white h-10 w-20">resign</button>
+          </div>
         </div>
       </div>
       {promotion &&(
