@@ -1,14 +1,14 @@
 const board = () =>{
 
     const chessBoard = [
-        ["rb", "nb", "bb", "qb", "kb", "bb", "nb", "rb"], 
+        ["rbL", "nb", "bb", "qb", "kb", "bb", "nb", "rbR"], 
         ["pb", "pb", "pb", "pb", "pb", "pb", "pb", "pb"], 
         [null, null, null, null, null, null, null, null], 
         [null, null, null, null, null, null, null, null], 
         [null, null, null, null, null, null, null, null], 
         [null, null, null, null, null, null, null, null], 
         ["pw", "pw", "pw", "pw", "pw", "pw", "pw", "pw"], 
-        ["rw", "nw", "bw", "qw", "kw", "bw", "nw", "rw"]
+        ["rwL", "nw", "bw", "qw", "kw", "bw", "nw", "rwR"]
         /*["", "bb", "", "kb", "bb", "", "", ""],
         ["", "", "", "", "", "", "", ""],
         ["", "", "", "", "", "", "", ""],

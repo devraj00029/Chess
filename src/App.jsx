@@ -16,6 +16,7 @@ const App = () =>{
 
   function handleClick(i,j){
     // first selection
+    if(promotion) return;
     if(selectedSqr.length === 0){
       if(!board[i][j]) return
       if(board[i][j][1]!=='w' && isWhite) return
@@ -53,14 +54,15 @@ const App = () =>{
       }
 
       if(board[selectedSqr[0]][selectedSqr[1]][0] == 'r'){
-        const rookPiece = `r${board[selectedSqr[0]][selectedSqr[1]][1]}${selectedSqr[1] === 0 ? 'L' : 'R'}`
-        setRookMove({...rookMove,[rookPiece]:true})
+        const rookPiece = board[selectedSqr[0]][selectedSqr[1]]
+        setRookMove({...rookMove,[rookPiece]:true}) 
       }
 
       const color = board[selectedSqr[0]][selectedSqr[1]][1]  
       const isPromotion = board[selectedSqr[0]][selectedSqr[1]][0] == 'p' && ((color == 'w' && i==0) || (color=='b' && i==7))
       if(isPromotion){
         setPromotion({row:i,col:j,color,from:[selectedSqr[0],selectedSqr[1]]})
+        setBoard(newBoard)
         return
       }
       
@@ -90,6 +92,10 @@ const App = () =>{
    setBoard(newBoard)
    setIsWhite(!isWhite)
    setPrevMove({piece:newBoard[promotion.row][promotion.col],from:promotion.from,to:[promotion.row,promotion.col]})
+   const opponentColor = isWhite ? 'b' : 'w'
+   if(isCheckMate(newBoard,opponentColor,prevMove,kingMove,rookMove)) alert("Game ended by checkmate, now sleep")
+   if(isStaleMate(newBoard,opponentColor,prevMove,kingMove,rookMove)) alert("Game ended by stalemate, now sleep")
+   if(insufficientMaterial(newBoard)) alert("Game over insufficient Material, now sleep")
    setPromotion(null)
    setSelectedSqr([])
    setvalidSqrs([])

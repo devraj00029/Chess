@@ -195,6 +195,7 @@ function getKingMove(board, row, col,kingMove,rookMove) {
             }
         }
     }
+    //Castling
     for(let i = col+1;i<7;i++){
         if(board[row][i]){
             kingSideClear = false 
@@ -207,10 +208,20 @@ function getKingMove(board, row, col,kingMove,rookMove) {
             break
         }
     }
-    if(kingSideClear && !kingMove[`k${color}`] && !rookMove[`r${color}R`]){
+    const opponentColor = color === 'w' ? 'b' : 'w'
+    if(isSquareAttacked(board,row,4,opponentColor)){
+        kingSideClear = false;
+        queenSideClear = false;
+    }
+    for(let k=2;k<4;k++){
+        if(queenSideClear && isSquareAttacked(board,row,k,opponentColor)) queenSideClear=false;
+        if(kingSideClear&& isSquareAttacked(board,row,k+3,opponentColor)) kingSideClear=false;
+        if(!kingSideClear && !queenSideClear) break;
+    }
+    if(kingSideClear && !kingMove[`k${color}`] && !rookMove[`r${color}R`] && board[row][7] == `r${color}R`){
         legalMoves.push([row,col+2])
     }
-    if(queenSideClear && !kingMove[`k${color}`] && !rookMove[`r${color}L`]){
+    if(queenSideClear && !kingMove[`k${color}`] && !rookMove[`r${color}L`] && board[row][0] == `r${color}L`){
         legalMoves.push([row,col-2])
     }
     return legalMoves
@@ -241,8 +252,23 @@ function getAttackedSquare(board,i,j){
     }
 }
 
+function isSquareAttacked(board,row,col,opponentColor){
+
+    for(let i=0;i<8;i++){
+        for(let j=0;j<8;j++){
+            if(board[i][j] && board[i][j][1]==opponentColor){
+                const moves = getAttackedSquare(board,i,j)
+                const isAttackSquare = moves.some(move => move[0]==row && move[1]==col);
+                if(isAttackSquare){
+                    return true
+                }
+            }
+        }
+    }
+    return false
+}
+
 function isCheck(board,color){
-    let check = false;
     let kingRow,kingCol
     for(let i=0;i<8;i++){
         for(let j=0;j<8;j++){
