@@ -371,7 +371,9 @@ function getLegalMove(board, row, col,prevMove,kingMove,rookMove,isWhite){
         const tempBoard = board.map(r=>[...r])
         tempBoard[toRow][toCol] = piece;
         tempBoard[row][col] = null;
-
+        if(toCol!==col && piece[0]==='p' && !board[toRow][toCol]){
+            tempBoard[row][toCol] = null;
+        }
         return !isCheck(tempBoard,piece[1])
     })
         
