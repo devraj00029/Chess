@@ -8,15 +8,15 @@ const board = () =>{
         [null, null, null, null, null, null, null, null], 
         [null, null, null, null, null, null, null, null], 
         ["pw", "pw", "pw", "pw", "pw", "pw", "pw", "pw"], 
-        ["rwL", "nw", "bw", "qw", "kw", "bw", "nw", "rwR"]
-        /*["", "bb", "", "kb", "bb", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
-        ["", "", "", "", "", "", "", ""],
-        ["", "bw", "", "kw", "bw", "", "", ""]*/
+        ["rwL", "nw", "bw", "qw", "kw", "bw", "nw", "rwR"],
+    //     [null, null, null, null, null, null, null, "kb"],
+    // [null, null, null, null, null, "qw", null, null],
+    // [null, null, null, null, null, null, null, null],
+    // [null, null, null, null, null, null, null, null],
+    // [null, null, null, "pb", null, null, null, null],
+    // [null, null, null, "pw", null, null, null, null],
+    // [null, null, null, null, "pw", null, null, null],
+    // ["kw", null, null, null, null, null, null, null]
     ];
 
     return chessBoard;

@@ -12,11 +12,13 @@ const App = () =>{
   const [prevMove,setPrevMove] = useState(null)
   const [kingMove,setKingMove] = useState({"kw" : false, "kb" : false})
   const [rookMove,setRookMove] = useState({"rwR" : false, "rwL" : false , "rbR" : false ,"rbL" : false})
-  const [promotion,setPromotion] = useState();
+  const [promotion,setPromotion] = useState()
+  const [gameOver,setGameOver] = useState()
+  const [moveHistory,setMoveHistory] = useState()
 
   function handleClick(i,j){
     // first selection
-    if(promotion) return;
+    if(promotion||gameOver) return;
     if(selectedSqr.length === 0){
       if(!board[i][j]) return
       if(board[i][j][1]!=='w' && isWhite) return
@@ -65,12 +67,13 @@ const App = () =>{
         setBoard(newBoard)
         return
       }
-      
+      const from = [selectedSqr[0],selectedSqr[1]]
+      const to = [i,j]
       const opponentColor = isWhite ? 'b' : 'w'
+      const currentMove = {piece:board[selectedSqr[0]][selectedSqr[1]] ,from:[selectedSqr[0],selectedSqr[1]], to:[i,j]}
+      toUCI(from,to)
       setBoard(newBoard)
-      if(isCheckMate(newBoard,opponentColor,prevMove,kingMove,rookMove)) alert("Game ended by checkmate, now sleep")
-      if(isStaleMate(newBoard,opponentColor,prevMove,kingMove,rookMove)) alert("Game ended by stalemate, now sleep")
-      if(insufficientMaterial(newBoard)) alert("Game over insufficient Material, now sleep")
+      checkGameState(newBoard,opponentColor,currentMove,kingMove,rookMove)
       setPrevMove({piece:board[selectedSqr[0]][selectedSqr[1]] ,from:[selectedSqr[0],selectedSqr[1]], to:[i,j]})
       setSelectedSqr([])
       setvalidSqrs([])
@@ -93,14 +96,21 @@ const App = () =>{
    setIsWhite(!isWhite)
    setPrevMove({piece:newBoard[promotion.row][promotion.col],from:promotion.from,to:[promotion.row,promotion.col]})
    const opponentColor = isWhite ? 'b' : 'w'
-   if(isCheckMate(newBoard,opponentColor,prevMove,kingMove,rookMove)) alert("Game ended by checkmate, now sleep")
-   if(isStaleMate(newBoard,opponentColor,prevMove,kingMove,rookMove)) alert("Game ended by stalemate, now sleep")
-   if(insufficientMaterial(newBoard)) alert("Game over insufficient Material, now sleep")
+   const currentMove = {piece:newBoard[promotion.row][promotion.col],from:promotion.from,to:[promotion.row,promotion.col]}
+   checkGameState(newBoard,opponentColor,currentMove,kingMove,rookMove)
    setPromotion(null)
    setSelectedSqr([])
    setvalidSqrs([])
   }
-
+  function checkGameState(newBoard,opponentColor,currentMove,kingMove,rookMove){
+    if(isCheckMate(newBoard,opponentColor,currentMove,kingMove,rookMove)) setGameOver("Checkmate")
+    if(isStaleMate(newBoard,opponentColor,currentMove,kingMove,rookMove)) setGameOver("Stalemate")
+    if(insufficientMaterial(newBoard)) setGameOver("Insufficient Material")
+  }
+  function toUCI(from,to){
+    const letters = ["a","b","c","d","e","f","g","h"]
+    console.log(`${letters[from[1]]}${8-from[0]}${letters[to[1]]}${8-to[0]}`)
+  }
 
   for(let i=0;i<8;i++){
     for(let j=0;j<8;j++){
@@ -160,6 +170,17 @@ const App = () =>{
           <img onClick={()=>handlePromotion('r')} src={pieces[promotion.color]['r']}></img>
         </div>
       )}
+      {
+       gameOver && (
+        <div className={`absolute flex flex-col h-[6.375vw] w-[17.5vw] bg-ink border-5 border-white text-amber-50 justify-center items-center`}>
+          Game Over Due to {gameOver}
+          <div className={`flex flex-row w-[17.5vw] justify-evenly pt-3`}>
+            <button onClick={()=>window.location.reload()} className={ `bg-ink border-2 border-white text-amber-50`}>RESTART</button>
+            <button onClick={()=>console.log("reviewing")} className={ `bg-ink border-2 border-white text-amber-50`}>REVIEW</button>
+          </div>
+        </div>
+       )
+      }
       <div className="flex rounded-xl flex-col h-[35vw] absolute w-[20vw] left-[9vw] bg-ink border-2 border-cream shadow-[0px_0px_45px_10px_rgba(177,117,230,1)]"></div>
     </div>
   )

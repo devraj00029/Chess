@@ -7,7 +7,6 @@ function getPawnMove(board, row, col, prevMove) {
     const enemy = color === 'w'? 'b':'w'
 
     let legalMoves = []
-    console.log(color)
     //1st pawn move
     if(row == startRow){
         let step = 1;
