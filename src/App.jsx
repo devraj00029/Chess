@@ -14,7 +14,7 @@ const App = () =>{
   const [rookMove,setRookMove] = useState({"rwR" : false, "rwL" : false , "rbR" : false ,"rbL" : false})
   const [promotion,setPromotion] = useState()
   const [gameOver,setGameOver] = useState()
-  const [moveHistory,setMoveHistory] = useState()
+  const [moveHistory,setMoveHistory] = useState([])
 
   function handleClick(i,j){
     // first selection
@@ -71,7 +71,7 @@ const App = () =>{
       const to = [i,j]
       const opponentColor = isWhite ? 'b' : 'w'
       const currentMove = {piece:board[selectedSqr[0]][selectedSqr[1]] ,from:[selectedSqr[0],selectedSqr[1]], to:[i,j]}
-      toUCI(from,to)
+      setMoveHistory(h=>[...h,toUCI(currentMove.from,currentMove.to)])
       setBoard(newBoard)
       checkGameState(newBoard,opponentColor,currentMove,kingMove,rookMove)
       setPrevMove({piece:board[selectedSqr[0]][selectedSqr[1]] ,from:[selectedSqr[0],selectedSqr[1]], to:[i,j]})
@@ -97,19 +97,23 @@ const App = () =>{
    setPrevMove({piece:newBoard[promotion.row][promotion.col],from:promotion.from,to:[promotion.row,promotion.col]})
    const opponentColor = isWhite ? 'b' : 'w'
    const currentMove = {piece:newBoard[promotion.row][promotion.col],from:promotion.from,to:[promotion.row,promotion.col]}
+   
    checkGameState(newBoard,opponentColor,currentMove,kingMove,rookMove)
    setPromotion(null)
    setSelectedSqr([])
    setvalidSqrs([])
   }
+
   function checkGameState(newBoard,opponentColor,currentMove,kingMove,rookMove){
     if(isCheckMate(newBoard,opponentColor,currentMove,kingMove,rookMove)) setGameOver("Checkmate")
     if(isStaleMate(newBoard,opponentColor,currentMove,kingMove,rookMove)) setGameOver("Stalemate")
     if(insufficientMaterial(newBoard)) setGameOver("Insufficient Material")
   }
-  function toUCI(from,to){
+
+  function toUCI(from,to,promo){
     const letters = ["a","b","c","d","e","f","g","h"]
-    console.log(`${letters[from[1]]}${8-from[0]}${letters[to[1]]}${8-to[0]}`)
+    const UCImove = `${letters[from[1]]}${8-from[0]}${letters[to[1]]}${8-to[0]}`
+    return UCImove
   }
 
   for(let i=0;i<8;i++){
@@ -142,6 +146,8 @@ const App = () =>{
       }
     }
   }
+  
+    console.log(moveHistory)
 
   return(
     <div className="relative flex justify-center items-center h-screen w-screen bg-ink">
